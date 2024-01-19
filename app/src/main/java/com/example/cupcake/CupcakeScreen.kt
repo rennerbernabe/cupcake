@@ -96,6 +96,42 @@ fun CupcakeApp(
     ) { innerPadding ->
         val uiState by viewModel.uiState.collectAsState()
 
-
+        NavHost(
+            navController = navController,
+            startDestination = CupcakeScreen.Start.name,
+            modifier = Modifier.padding(innerPadding)
+        ) {
+            composable(route = CupcakeScreen.Start.name) {
+                StartOrderScreen(
+                    quantityOptions = DataSource.quantityOptions,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(dimensionResource(R.dimen.padding_medium))
+                )
+            }
+            composable(route = CupcakeScreen.Flavor.name) {
+                val context = LocalContext.current
+                SelectOptionScreen(
+                    subtotal = uiState.price,
+                    options = DataSource.flavors.map { id -> context.resources.getString(id) },
+                    onSelectionChanged = { viewModel.setFlavor(it) },
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+            composable(route = CupcakeScreen.Pickup.name) {
+                SelectOptionScreen(
+                    subtotal = uiState.price,
+                    options = uiState.pickupOptions,
+                    onSelectionChanged = { viewModel.setDate(it) },
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+            composable(route = CupcakeScreen.Summary.name) {
+                OrderSummaryScreen(
+                    orderUiState = uiState,
+                    modifier = Modifier.fillMaxHeight()
+                )
+            }
+        }
     }
 }
